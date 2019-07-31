@@ -5,25 +5,45 @@ import {transactions} from '../transactionsData'
 
 class AccountContainer extends Component {
 
-  constructor() {
-    super()
-
-    // get a default state working with the data imported from TransactionsData
-    // use this to get the functionality working
-    // then replace the default transactions with a call to the API
-
+  state = {
+    transactions: transactions,
+    search: ""
   }
 
-  handleChange(event) {
-    // your code here
+  fetchGetTransactions = () => {
+    fetch('https://boiling-brook-94902.herokuapp.com/transactions')
+    .then(r => r.json())
+    .then(j => this.setState({transactions: j}))
+  }
+
+  componentDidMount() {
+    this.fetchGetTransactions()
+  }
+
+  handleChange = (searchTerm) => {
+    this.setState({
+      search: searchTerm
+    })
+  }
+
+  handleSearchChange = () => {
+    this.fetchGetTransactions()
+  }
+
+  returnTransactions = () => {
+    let transactionCopy = [...this.state.transactions]
+    let filtered = transactionCopy.filter(transaction => {
+      return transaction.category.toLowerCase().includes(this.state.search.toLowerCase()) || transaction.description.toLowerCase().includes(this.state.search.toLowerCase())
+    })
+    return filtered
   }
 
   render() {
-
+    console.log(this.state.transactions);
     return (
       <div>
-        <Search />
-        <TransactionsList />
+        <Search searchTerm={this.state.search} handleChange={this.handleChange}/>
+        <TransactionsList transactions={this.returnTransactions()} />
       </div>
     )
   }
