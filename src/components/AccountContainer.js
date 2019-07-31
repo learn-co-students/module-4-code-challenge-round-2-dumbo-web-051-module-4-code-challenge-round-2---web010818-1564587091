@@ -14,16 +14,30 @@ class AccountContainer extends Component {
 
   }
 
-  handleChange(event) {
-    // your code here
+  state = {
+    data: [],
+    searchTerm: ""
   }
 
-  render() {
+  componentDidMount() {
+    fetch('https://boiling-brook-94902.herokuapp.com/transactions')
+    .then(res => res.json())
+    .then(bankData => this.setState({ data: bankData }))
+  }
 
+  handleSearchChange(e) {
+    e.preventDefault()
+    this.setState({ searchTerm: e.target.value })
+  }
+
+
+
+  render() {
+    const filteredTransactions = this.state.data.description.filter(transaction => this.state.searchTerm === this.state.data.description)
     return (
       <div>
-        <Search />
-        <TransactionsList />
+        <Search searchTerm={this.state.searchTerm} handleSearchChange={this.handleSearchChange}/>
+        <TransactionsList bankData={this.state.data} />
       </div>
     )
   }
